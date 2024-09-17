@@ -15,18 +15,14 @@ return new class extends Migration
             $table->id();
             $table->dateTime("departure");
             $table->dateTime("arrival");
-            $table->string("status");
             $table->foreignId("bus_id")->constrained();
-            $table->foreignId("start_station_id")->constrained("stations")
-                ->cascadeOnDelete();
-            $table->foreignId("end_station_id")->constrained("stations")
-                ->cascadeOnDelete();
             $table->timestamps();
         });
 
         Schema::create('trip_segments', function (Blueprint $table) {
             $table->id();
-            $table->tinyInteger("segment_order");
+            $table->tinyInteger("order");
+            $table->boolean("is_main")->default(false);
             $table->foreignId("trip_id");
             $table->foreignId("start_station_id")->constrained("stations")
                 ->cascadeOnDelete();

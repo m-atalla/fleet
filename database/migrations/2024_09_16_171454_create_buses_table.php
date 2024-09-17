@@ -14,12 +14,11 @@ return new class extends Migration
         Schema::create('buses', function (Blueprint $table) {
             $table->id();
             $table->string("plate_number");
-            $table->timestamps();
         });
 
         Schema::create('seats', function(Blueprint $table) {
             $table->id();
-            $table->tinyInteger("seat_number");
+            $table->tinyInteger("number");
             $table->foreignId("bus_id")->constrained()->cascadeOnDelete();
         });
     }
