@@ -19,19 +19,8 @@ class SeatFactory extends Factory
     public function definition(): array
     {
         return [
-            "number" => $this->faker->unique()->numberBetween(1, 12),
+            "number" => $this->faker->numberBetween(1, 12),
             "bus_id" => Bus::factory(),
         ];
-    }
-
-    /**
-     * Override to reset unique constraints after each batch
-     * 
-     */
-    public function configure()
-    {
-        return $this->afterCreating(function (Seat $seat) {
-            $this->faker->unique(true); 
-        });
     }
 }

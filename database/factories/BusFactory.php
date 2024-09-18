@@ -29,10 +29,14 @@ class BusFactory extends Factory
      */
     public function configure(): static
     {
-        return $this->afterCreating(function (Bus $bus){
-            Seat::factory(12)->create([
-                "bus_id" => $bus->id,
-            ]);
+        return $this->afterCreating(function (Bus $bus) {
+
+            $seats = [];
+            for ($i = 1; $i <= 12; $i++) {
+                array_push($seats, ["bus_id" => $bus->id, "number" => $i]);
+            }
+
+            Seat::insert($seats);
         });
     }
 }
