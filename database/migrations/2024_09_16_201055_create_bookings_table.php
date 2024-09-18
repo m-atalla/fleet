@@ -18,6 +18,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
             $table->foreignId("trip_segment_id")->constrained();
             $table->timestamps();
+            $table->unique(["seat_id", "user_id", "trip_segment_id"]);
         });
     }
 
