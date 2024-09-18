@@ -28,4 +28,4 @@ Route::get("/trips", [TripController::class, "index"]);
 Route::get("/trips/{id}", [TripController::class, "show"]);
 
 // trip segments
-Route::get("/trip-segments/{id}", [TripSegmentController::class, "show"]);
+Route::get("/trip-segments/{tripSegment}", [TripSegmentController::class, "show"]);
