@@ -21,7 +21,8 @@ return new class extends Migration
 
         Schema::create('trip_segments', function (Blueprint $table) {
             $table->id();
-            $table->tinyInteger("order");
+            $table->smallInteger("start_order");
+            $table->smallInteger("end_order");
             $table->boolean("is_main")->default(false);
             $table->foreignId("trip_id");
             $table->foreignId("start_station_id")->constrained("stations")
