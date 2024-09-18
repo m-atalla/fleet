@@ -51,24 +51,11 @@ class BookingController extends Controller
                                     use ($currentStartOrder, $currentEndOrder) {
                                         $subQ->where(
                                             'start_order',
-                                            '>=',
-                                            $currentStartOrder
-                                        )->where(
-                                            'start_order',
                                             '<=',
-                                            $currentEndOrder
-                                        );
-                                    }
-                                )->orWhere(
-                                    function ($subQ)
-                                    use ($currentStartOrder, $currentEndOrder) {
-                                        $subQ->where(
-                                            'end_order',
-                                            '>=',
                                             $currentStartOrder
                                         )->where(
                                             'end_order',
-                                            '<=',
+                                            '>=',
                                             $currentEndOrder
                                         );
                                     }
