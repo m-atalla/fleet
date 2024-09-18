@@ -19,11 +19,11 @@ class BookingFactory extends Factory
      */
     public function definition(): array
     {
-        $trip = TripSegment::factory()->create();
+        $tripSegment = TripSegment::factory()->create();
         return [
-            "seat_id" => $trip->bus->seats->first(),
+            "seat_id" => $tripSegment->trip->bus->seats->first()->id,
             "user_id" => User::factory(),
-            "trip_segment_id" => $trip->id
+            "trip_segment_id" => $tripSegment->id
         ];
     }
 }
