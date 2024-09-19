@@ -19,7 +19,7 @@ class TripFactory extends Factory
     public function definition(): array
     {
 
-        $departure_datetime = $this->faker->dateTimeBetween("now", "+3 days");
+        $departure_datetime = $this->faker->dateTimeBetween("+1 hours", "+3 days");
         $arrival_datetime = $this->faker
             ->dateTimeInInterval($departure_datetime, "+6 hours");
         return [
