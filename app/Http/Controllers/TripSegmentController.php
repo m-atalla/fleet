@@ -23,41 +23,35 @@ class TripSegmentController extends Controller
 
     public function availableSeats($tripSegmentId)
     {
-        // Cache key based on the trip segment
-        $cacheKey = 'available_seats_trip_segment_' . $tripSegmentId;
+        $tripSegment = TripSegment::findOrFail($tripSegmentId);
 
-        // Check if the result is already cached
-        return Cache::remember(
-            $cacheKey,
-            now()->addHour(),
-            function () use ($tripSegmentId) {
-                // Fetch the trip segment
-                $tripSegment = TripSegment::findOrFail($tripSegmentId);
+        $currentStartOrder = $tripSegment->start_order;
+        $currentEndOrder = $tripSegment->end_order;
+        $tripId = $tripSegment->trip_id;
 
-                $currentStartOrder = $tripSegment->start_order;
-                $currentEndOrder = $tripSegment->end_order;
-                $tripId = $tripSegment->trip_id;
+        // Get all seats for the trip
+        $allSeats = $tripSegment->trip->bus->seats;
 
-                // Fetch all seats for the trip (assuming seats are tied to a trip)
-                $allSeats = $tripSegment->trip->bus->seats;
+        // Get booked seat IDs across overlapping segments for this trip
+        $bookedSeats = Booking::whereHas('tripSegment', function ($query) use ($tripId, $currentStartOrder, $currentEndOrder) {
+            $query->where('trip_id', $tripId)
+                ->where(function ($q) use ($currentStartOrder, $currentEndOrder) {
+                    $q->where(function ($subQ) use ($currentStartOrder, $currentEndOrder) {
+                        $subQ->where('start_order', '<=', $currentStartOrder)
+                            ->where('end_order', '>=', $currentEndOrder);
+                    })->orWhere(function ($subQ) use ($currentStartOrder, $currentEndOrder) {
+                        $subQ->where('start_order', '>=', $currentStartOrder)
+                            ->where('start_order', '<', $currentEndOrder)
+                            ->orWhere('end_order', '>', $currentStartOrder)
+                            ->where('end_order', '<=', $currentEndOrder);
+                    });
+                });
+        })->pluck('seat_id');
 
-                // Get booked seat IDs across overlapping segments for this trip
-                $bookedSeats = Booking::whereHas('tripSegment', function ($query) use ($tripId, $currentStartOrder, $currentEndOrder) {
-                    $query->where('trip_id', $tripId)
-                        ->where(function ($q) use ($currentStartOrder, $currentEndOrder) {
-                            $q->where(function ($subQ) use ($currentStartOrder, $currentEndOrder) {
-                                $subQ->where('start_order', '<=', $currentEndOrder)
-                                    ->where('end_order', '>=', $currentStartOrder);
-                            });
-                        });
-                })->pluck('seat_id');
+        // Filter out the booked seats
+        $availableSeats = $allSeats->whereNotIn('id', $bookedSeats);
 
-                // Filter out the booked seats
-                $availableSeats = $allSeats->whereNotIn('id', $bookedSeats);
-
-                // Return available seats
-                return $availableSeats;
-            }
-        );
+        // Return available seats
+        return $availableSeats;
     }
 }
