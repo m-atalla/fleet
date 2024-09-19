@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Trip;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class TripController extends Controller
@@ -12,7 +13,10 @@ class TripController extends Controller
      */
     public function index()
     {
-        return response()->json(Trip::with("tripSegments")->get());
+        $upcomingTrips = Trip::with("tripSegments")
+            ->where("departure", ">", Carbon::now())->get();
+
+        return response()->json(["trips" => $upcomingTrips]);
     }
 
     /**
